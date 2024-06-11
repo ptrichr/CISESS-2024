@@ -1,7 +1,7 @@
 #*****************************************************************************************
 # Vivado (TM) v2023.2 (64-bit)
 #
-# project_1.tcl: Tcl script for re-creating project 'project_1'
+# microwave-radiometer-2024.tcl: Tcl script for re-creating project 'microwave-radiometer-2024'
 #
 # IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
 #
@@ -18,7 +18,7 @@
 proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
- "[file normalize "$origin_dir/vivado_project/project_1.srcs/sources_1/ip/xadc_wiz_0/xadc_wiz_0.xci"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/ip/xadc_wiz_0/xadc_wiz_0.xci"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -28,9 +28,9 @@ proc checkRequiredFiles { origin_dir} {
   }
 
   set files [list \
- "[file normalize "$origin_dir/vivado_project/project_1.srcs/sources_1/imports/src/adc_toplevel.v"]"\
- "[file normalize "$origin_dir/vivado_project/project_1.srcs/sources_1/imports/src/radiometer_toplevel.v"]"\
- "[file normalize "$origin_dir/vivado_project/project_1.srcs/sources_1/imports/src/switch_clock_divider.v"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/adc_toplevel.v"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/radiometer_toplevel.v"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/switch_clock_divider.v"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -50,7 +50,7 @@ if { [info exists ::origin_dir_loc] } {
 }
 
 # Set the project name
-set _xil_proj_name_ "project_1"
+set _xil_proj_name_ "microwave-radiometer-2024"
 
 # Use project name variable, if specified in the tcl shell
 if { [info exists ::user_project_name] } {
@@ -58,7 +58,7 @@ if { [info exists ::user_project_name] } {
 }
 
 variable script_file
-set script_file "project_1.tcl"
+set script_file "microwave-radiometer-2024.tcl"
 
 # Help information for this script
 proc print_help {} {
@@ -162,7 +162,6 @@ set_property -name "webtalk.modelsim_export_sim" -value "1" -objects $obj
 set_property -name "webtalk.questa_export_sim" -value "1" -objects $obj
 set_property -name "webtalk.riviera_export_sim" -value "1" -objects $obj
 set_property -name "webtalk.vcs_export_sim" -value "1" -objects $obj
-set_property -name "webtalk.xcelium_export_sim" -value "1" -objects $obj
 set_property -name "webtalk.xsim_export_sim" -value "1" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
@@ -173,9 +172,9 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- [file normalize "${origin_dir}/vivado_project/project_1.srcs/sources_1/imports/src/adc_toplevel.v"] \
- [file normalize "${origin_dir}/vivado_project/project_1.srcs/sources_1/imports/src/radiometer_toplevel.v"] \
- [file normalize "${origin_dir}/vivado_project/project_1.srcs/sources_1/imports/src/switch_clock_divider.v"] \
+ [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/adc_toplevel.v"] \
+ [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/radiometer_toplevel.v"] \
+ [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/switch_clock_divider.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -194,7 +193,7 @@ set_property -name "top" -value "adc_toplevel" -objects $obj
 set obj [get_filesets sources_1]
 # Add local files from the original project (-no_copy_sources specified)
 set files [list \
- [file normalize "${origin_dir}/vivado_project/project_1.srcs/sources_1/ip/xadc_wiz_0/xadc_wiz_0.xci" ]\
+ [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/ip/xadc_wiz_0/xadc_wiz_0.xci" ]\
 ]
 set added_files [add_files -fileset sources_1 $files]
 
