@@ -29,8 +29,8 @@ proc checkRequiredFiles { origin_dir} {
 
   set files [list \
  "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/adc_toplevel.v"]"\
- "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/radiometer_toplevel.v"]"\
  "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/switch_clock_divider.v"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/radiometer_toplevel.v"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -173,8 +173,8 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 set obj [get_filesets sources_1]
 set files [list \
  [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/adc_toplevel.v"] \
- [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/radiometer_toplevel.v"] \
  [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/switch_clock_divider.v"] \
+ [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/radiometer_toplevel.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -187,7 +187,7 @@ add_files -norecurse -fileset $obj $files
 # Set 'sources_1' fileset properties
 set obj [get_filesets sources_1]
 set_property -name "dataflow_viewer_settings" -value "min_width=16" -objects $obj
-set_property -name "top" -value "adc_toplevel" -objects $obj
+set_property -name "top" -value "radiometer_toplevel" -objects $obj
 
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
@@ -234,7 +234,7 @@ set obj [get_filesets sim_1]
 
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
-set_property -name "top" -value "adc_toplevel" -objects $obj
+set_property -name "top" -value "radiometer_toplevel" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
 # Set 'utils_1' fileset object
