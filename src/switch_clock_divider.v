@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer: Nathan Ho
 // 
 // Create Date: 06/03/2024 10:29:34 AM
 // Design Name: 
@@ -9,7 +9,7 @@
 // Project Name: CISESS-Summer-2024
 // Target Devices: Digilent Arty S7 Spartan
 // Tool Versions: 
-// Description: Generates a PWM signal @ 2083 KHz, 47% Duty Cycle to drive a switch (assume 50% here for simplicity)
+// Description: Generates a PWM signal @ 2083 KHz, 50% Duty Cycle
 // 
 // Dependencies: 
 // 
@@ -22,7 +22,7 @@
 
 module switch_clock_divider(
     input wire clk,
-//    input wire clr,
+//  input wire clr,
     output reg clk_enable
 );
 
@@ -48,8 +48,8 @@ begin
         begin
             clk_enable <= 0;
             count <= count + 1;
+        end
         // reset
-        end 
         else 
         begin
             clk_enable <= 1;

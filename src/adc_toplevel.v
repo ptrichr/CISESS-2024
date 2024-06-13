@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer: Nathan Ho
 // 
 // Create Date: 06/04/2024 10:17:50 AM
 // Design Name: 
@@ -33,29 +33,30 @@ module adc_toplevel(
     // demo for more pin assignments
 
 
-   wire enable;  
-   wire ready;
-   reg ready_d1;
-   wire ready_rising;
-   wire ready_falling;
-   wire [15:0] data;                        // the 12 most significant bits store the data we need
-   reg [6:0] Address_in;
+    wire enable;  
+    wire ready;
+    reg ready_d1;
+    wire ready_rising;
+    wire ready_falling;
+    wire [15:0] data;                        // the 12 most significant bits store the data we need
+    reg [6:0] Address_in;
    
-   reg sample;                              // chooses between switch signal (A0) and feed signal (A1)
-   reg [1023:0] feed_accumulator;           // unpacked array of 1024 samples to store feed signal
-   reg [1023:0] switch_accumulator;         // unpacked array of 1024 samples to store switch signal
-   integer i;
-   integer j;
-   integer counter;
-   integer Von;
-   integer on_count;
-   integer Voff;
-   integer off_count;
+    reg sample;                              // chooses between switch signal (A0) and feed signal (A1)
+    reg [1023:0] feed_accumulator;           // unpacked array of 1024 samples to store feed signal
+    reg [1023:0] switch_accumulator;         // unpacked array of 1024 samples to store switch signal
+    integer i;                               // keeps track of position in switch array
+    integer j;                               // keeps track of position in feed array
+    integer counter;                         // keeps track of position in both arrays for demodulation
+    integer Von;                             // for demodulation. keeps track of total "value" for segments where the switch is closed
+    integer on_count;                        // for demodulation. keeps track of number of values for segments where the switch is closed
+    integer Voff;                            // for demodulation. keeps track of total "value" for segments where the switch is open
+    integer off_count;                       // for demodulation. keeps track of number of values for segments where the switch is open
    
-   parameter max_samples = 1024;
+    parameter max_samples = 1024;            // max number of samples
    
-   initial
-   begin
+    // initializes variables
+    initial
+    begin
         sample = 0;                         // 0 means A0, 1 means A1
         i = 0;
         j = 0;
@@ -66,12 +67,12 @@ module adc_toplevel(
         off_count = 0;
         feed_accumulator = 0;
         switch_accumulator = 0;
-   end
+    end
 
-   //xadc instantiation connect the eoc_out .den_in to get continuous conversion
+    //xadc instantiation connect the eoc_out .den_in to get continuous conversion
 
-   xadc_wiz_0 xadc
- (
+    xadc_wiz_0 xadc
+    (
 //        i have no clue what these are 
         .daddr_in(Address_in),                      // Address bus for the dynamic reconfiguration port
         .dclk_in(clk),                              // Clock input for the dynamic reconfiguration port
@@ -88,8 +89,8 @@ module adc_toplevel(
         .drdy_out(ready),                           // Data ready signal for the dynamic reconfiguration port
         
         // check the demo for i/o ports
-        .vp_in(vp_in),                              // input wire vp_in (i think these are reference pins, this is positive reference)
-        .vn_in(vn_in),                              // input wire vn_in (ground reference)
+//      .vp_in(vp_in),                              // input wire vp_in (i think these are reference pins, this is positive reference)
+//      .vn_in(vn_in),                              // input wire vn_in (ground reference)
         .vauxp0(switch_signal),                     // input wire vauxp0 (analog input - switching)
         .vauxn0(vauxn0),                            // input wire vauxn0 (grounded? check schematic)
         .vauxp1(feed_signal),                       // input wire vauxp1 (analog input - feed)
@@ -98,7 +99,7 @@ module adc_toplevel(
     
     always @(posedge clk)
     begin
-          ready_d1 <= ready;
+        ready_d1 <= ready;
     end
       
     assign ready_rising = ready && !ready_d1 ? 1'b1 : 1'b0;
