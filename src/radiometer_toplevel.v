@@ -25,9 +25,21 @@ module radiometer_toplevel(
     input clk,              // R2
 //    input clr,
     input feed_signal,
+    input feed_ground,
+    input switch_signal,     // loop this from the output
+    input switch_ground,
     output switch_pwm,
     output demod
 );  
-    switch_clock_divider s(.clk(clk), .clk_enable(switch_pwm));
-    adc_toplevel a(.clk(clk), .switch_signal(switch_pwm), .feed_signal(feed_signal), .demod(demod));
+    // instantiate switch module
+    switch_clock_divider s(.clk(clk), 
+                           .clk_enable(switch_pwm));
+    
+    // instantiate ADC module                       
+    adc_toplevel a(.clk(clk), 
+                   .switch_signal(switch_signal), 
+                   .switch_ground(switch_ground), 
+                   .feed_signal(feed_signal), 
+                   .feed_ground(feed_ground), 
+                   .demod(demod));
 endmodule

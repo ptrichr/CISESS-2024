@@ -19,6 +19,8 @@ proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
  "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/ip/xadc_wiz_0/xadc_wiz_0.xci"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/constrs_1/new/const1.xdc"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/utils_1/imports/synth_1/radiometer_toplevel.dcp"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -219,10 +221,17 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 # Set 'constrs_1' fileset object
 set obj [get_filesets constrs_1]
 
-# Empty (no sources present)
+# Add/Import constrs file and set constrs file properties
+set file "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/constrs_1/new/const1.xdc"]"
+set file_added [add_files -norecurse -fileset $obj [list $file]]
+set file "new/const1.xdc"
+set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
+set_property -name "file_type" -value "XDC" -objects $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
+set_property -name "target_constrs_file" -value "[get_files *new/const1.xdc]" -objects $obj
+set_property -name "target_ucf" -value "[get_files *new/const1.xdc]" -objects $obj
 
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
@@ -240,7 +249,20 @@ set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
 # Set 'utils_1' fileset object
 set obj [get_filesets utils_1]
-# Empty (no sources present)
+# Add local files from the original project (-no_copy_sources specified)
+set files [list \
+ [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/utils_1/imports/synth_1/radiometer_toplevel.dcp" ]\
+]
+set added_files [add_files -fileset utils_1 $files]
+
+# Set 'utils_1' fileset file properties for remote files
+# None
+
+# Set 'utils_1' fileset file properties for local files
+set file "synth_1/radiometer_toplevel.dcp"
+set file_obj [get_files -of_objects [get_filesets utils_1] [list "*$file"]]
+set_property -name "netlist_only" -value "0" -objects $file_obj
+
 
 # Set 'utils_1' fileset properties
 set obj [get_filesets utils_1]
@@ -271,6 +293,8 @@ if { $obj != "" } {
 
 }
 set obj [get_runs synth_1]
+set_property -name "needs_refresh" -value "1" -objects $obj
+set_property -name "incremental_checkpoint" -value "$proj_dir/microwave-radiometer-2024.srcs/utils_1/imports/synth_1/radiometer_toplevel.dcp" -objects $obj
 set_property -name "auto_incremental_checkpoint" -value "1" -objects $obj
 set_property -name "strategy" -value "Vivado Synthesis Defaults" -objects $obj
 
@@ -493,6 +517,7 @@ set_property -name "options.warn_on_violation" -value "1" -objects $obj
 
 }
 set obj [get_runs impl_1]
+set_property -name "needs_refresh" -value "1" -objects $obj
 set_property -name "strategy" -value "Vivado Implementation Defaults" -objects $obj
 set_property -name "steps.write_bitstream.args.readback_file" -value "0" -objects $obj
 set_property -name "steps.write_bitstream.args.verbose" -value "0" -objects $obj
