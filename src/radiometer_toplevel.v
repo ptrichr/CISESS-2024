@@ -31,12 +31,18 @@ module radiometer_toplevel(
     output switch_pwm,
     output demod
 );  
+    wire adc_enable;
+    
     // instantiate switch module
     switch_clock_divider s(.clk(clk), 
                            .clk_enable(switch_pwm));
+                           
+    // clock divider for ADC module
+    adc_clock_divider d(.clk(clk),
+                        .clk_enable(adc_enable));
     
     // instantiate ADC module                       
-    adc_toplevel a(.clk(clk), 
+    adc_toplevel a(.clk(adc_enable), 
                    .switch_signal(switch_signal), 
                    .switch_ground(switch_ground), 
                    .feed_signal(feed_signal), 
