@@ -30,7 +30,6 @@ module adc_toplevel(
     output reg demod
 );
 
-
     // make sure to ground the pins labeled V_P and V_N
     // demo for more pin assignments
     
@@ -81,7 +80,7 @@ module adc_toplevel(
     end
 
 
-    //xadc instantiation connect the eoc_out .den_in to get continuous conversion
+    // xadc instantiation connect the eoc_out .den_in to get continuous conversion
     xadc_wiz_0 xadc
     (
         .daddr_in(Address_in),                              // Address bus for the dynamic reconfiguration port

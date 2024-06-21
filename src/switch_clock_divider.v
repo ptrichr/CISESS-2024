@@ -32,7 +32,7 @@ initial begin
     count = 0;
 end
 
-//factor of 48000 downscales 100MHz to 2.083KHz
+// factor of 48000 downscales 100MHz to 2.083KHz
 always @(posedge clk) 
 begin
     // up time
@@ -40,8 +40,8 @@ begin
     begin
         clk_enable <= 1;
         count <= count + 1;
+    end
     // down time
-    end 
     else 
     begin
         if (count < 47999) 
