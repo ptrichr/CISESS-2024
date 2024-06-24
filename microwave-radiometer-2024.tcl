@@ -19,7 +19,6 @@ proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
  "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/ip/xadc_wiz_0/xadc_wiz_0.xci"]"\
- "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/constrs_1/new/const1.xdc"]"\
  "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/utils_1/imports/synth_1/radiometer_toplevel.dcp"]"\
   ]
   foreach ifile $files {
@@ -34,6 +33,7 @@ proc checkRequiredFiles { origin_dir} {
  "[file normalize "$origin_dir/src/adc_toplevel.v"]"\
  "[file normalize "$origin_dir/src/switch_clock_divider.v"]"\
  "[file normalize "$origin_dir/src/radiometer_toplevel.v"]"\
+ "[file normalize "$origin_dir/constraints/const1.xdc"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -224,16 +224,15 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 set obj [get_filesets constrs_1]
 
 # Add/Import constrs file and set constrs file properties
-set file "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/constrs_1/new/const1.xdc"]"
+set file "[file normalize "$origin_dir/constraints/const1.xdc"]"
 set file_added [add_files -norecurse -fileset $obj [list $file]]
-set file "new/const1.xdc"
+set file "$origin_dir/constraints/const1.xdc"
+set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
 set_property -name "file_type" -value "XDC" -objects $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
-set_property -name "target_constrs_file" -value "[get_files *new/const1.xdc]" -objects $obj
-set_property -name "target_ucf" -value "[get_files *new/const1.xdc]" -objects $obj
 
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
