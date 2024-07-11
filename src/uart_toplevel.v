@@ -15,7 +15,7 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments:
+// Additional Comments: credit for uart transmitter design: https://github.com/ben-marshall/uart
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
