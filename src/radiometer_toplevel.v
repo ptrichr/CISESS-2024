@@ -22,30 +22,47 @@
 
 
 module radiometer_toplevel(
-    input clk,              // R2
-//    input clr,
-    input feed_signal,
-    input feed_ground,
-    input switch_signal,     // loop this from the output
-    input switch_ground,
-    output switch_pwm,
-    output demod
+input               clk             ,           // R2, internal 100MHz clock
+input               feed_signal     ,
+input               feed_ground     ,
+input               switch_signal   ,           // loop this from the output
+input               switch_ground   ,
+input               sw_0            ,           // UART enable switch
+
+output              switch_pwm      ,           // switching PWM output
+output  wire        uart_txd        ,           // UART transmission pin
+output  wire        busy                        // UART busy LED
 );  
-    wire adc_enable;
-    
-    // instantiate switch module
-    switch_clock_divider s(.clk(clk), 
-                           .clk_enable(switch_pwm));
-                           
-    // clock divider for ADC module
-    adc_clock_divider d(.clk(clk),
-                        .clk_enable(adc_enable));
-    
-    // instantiate ADC module                       
-    adc_toplevel a(.clk(adc_enable), 
-                   .switch_signal(switch_signal), 
-                   .switch_ground(switch_ground), 
-                   .feed_signal(feed_signal), 
-                   .feed_ground(feed_ground), 
-                   .demod(demod));
+
+wire adc_enable;
+
+// instantiate switch module
+switch_clock_divider
+s(
+.clk            (clk            ), 
+.clk_enable     (switch_pwm     )
+);
+                       
+
+// instantiate ADC module                       
+adc_toplevel
+a(
+.clk            (adc_enable     ), 
+.switch_signal  (switch_signal  ), 
+.switch_ground  (switch_ground  ), 
+.feed_signal    (feed_signal    ), 
+.feed_ground    (feed_ground    ), 
+.demod          (demod          )
+);
+
+// uart
+uart_toplevel
+u(
+.clk            (clk            ),
+.sw_0           (sw_0           ),
+.demod          (demod          ),
+.uart_txd       (uart_txd       ),
+.busy           (busy           )
+);
+
 endmodule

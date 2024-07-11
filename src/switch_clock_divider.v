@@ -15,15 +15,14 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments: Use high-speed PMOD port as output fo this (JA, JB)
+// Additional Comments: Use we are using PMOD ports JC, JD for this output.
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
 
 module switch_clock_divider(
-    input wire clk,
-//  input wire clr,
-    output reg clk_enable
+    input                clk,
+    output  reg          clk_enable
 );
 
 integer count;

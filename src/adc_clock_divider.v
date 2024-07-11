@@ -21,11 +21,11 @@
 
 
 module adc_clock_divider(
-    input clk,
-    output reg clk_enable
+    input               clk,
+    output  reg         clk_enable
 );
 
-    integer count;
+integer count;
 
 initial begin
     count = 0;
