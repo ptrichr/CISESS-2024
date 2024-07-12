@@ -28,7 +28,7 @@ output              uart_txd    ,   // UART transmission pin
 output              busy            // UART busy signal
 );
 
-wire transmit_top, transmit_bottom, uart_tx_en, en;
+wire transmit_1, transmit_2, uart_tx_en, en;
 wire  [7:0]     demod_1;
 wire  [7:0]     demod_2;
 wire  [7:0]     uart_tx_data;
@@ -50,8 +50,8 @@ c(
 .demod_2        (demod_2        ),
 
 // outputs
-.transmit_top   (transmit_top   ),
-.transmit_bottom(transmit_bottom)
+.transmit_1     (transmit_1     ),
+.transmit_2     (transmit_2     )
 );
 
 
@@ -64,8 +64,8 @@ d(
 .clk            (clk            ),
 .demod_1        (demod_1        ),
 .demod_2        (demod_2        ),
-.transmit_top   (transmit_top   ),
-.transmit_bottom(transmit_bottom),
+.transmit_1     (transmit_1     ),
+.transmit_2     (transmit_2     ),
 
 // outputs
 .uart_tx_en     (uart_tx_en     ),

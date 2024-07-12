@@ -11,3 +11,11 @@ set_property IOSTANDARD LVCMOS33 [get_ports switch_signal]
 
 set_property PACKAGE_PIN U15 [get_ports switch_pwm]
 set_property PACKAGE_PIN V16 [get_ports demod]
+
+set_property IOSTANDARD LVCMOS33 [get_ports busy]
+set_property IOSTANDARD LVCMOS33 [get_ports sw_0]
+set_property IOSTANDARD LVCMOS33 [get_ports uart_txd]
+set_property PACKAGE_PIN E15 [get_ports busy]
+set_property PACKAGE_PIN B13 [get_ports feed_signal]
+set_property PACKAGE_PIN H14 [get_ports sw_0]
+set_property PACKAGE_PIN R12 [get_ports uart_txd]

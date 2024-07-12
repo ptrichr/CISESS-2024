@@ -25,11 +25,9 @@ module radiometer_toplevel(
 input               clk             ,           // R2, internal 100MHz clock
 input               feed_signal     ,
 input               feed_ground     ,
-input               switch_signal   ,           // loop this from the output
-input               switch_ground   ,
 input               sw_0            ,           // UART enable switch
 
-output              switch_pwm      ,           // switching PWM output
+output  wire        switch_pwm      ,           // switching PWM output
 output  wire        uart_txd        ,           // UART transmission pin
 output  wire        busy                        // UART busy LED
 );  
@@ -37,19 +35,18 @@ output  wire        busy                        // UART busy LED
 wire adc_enable;
 
 // instantiate switch module
-switch_clock_divider
+switching
 s(
 .clk            (clk            ), 
-.clk_enable     (switch_pwm     )
+.pwm            (switch_pwm     )
 );
                        
 
 // instantiate ADC module                       
 adc_toplevel
 a(
-.clk            (adc_enable     ), 
-.switch_signal  (switch_signal  ), 
-.switch_ground  (switch_ground  ), 
+.clk            (clk            ), 
+.switch_pwm     (switch_pwm     ), 
 .feed_signal    (feed_signal    ), 
 .feed_ground    (feed_ground    ), 
 .demod          (demod          )

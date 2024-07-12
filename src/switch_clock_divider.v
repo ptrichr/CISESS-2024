@@ -20,9 +20,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module switch_clock_divider(
+module switching (
     input                clk,
-    output  reg          clk_enable
+    output  reg          pwm
 );
 
 integer count;
@@ -37,7 +37,7 @@ begin
     // up time
     if (count < 23999)
     begin
-        clk_enable <= 1;
+        pwm <= 1;
         count <= count + 1;
     end
     // down time
@@ -45,13 +45,13 @@ begin
     begin
         if (count < 47999) 
         begin
-            clk_enable <= 0;
+            pwm <= 0;
             count <= count + 1;
         end
         // reset
         else 
         begin
-            clk_enable <= 1;
+            pwm <= 1;
             count <= 0;
         end
     end
