@@ -21,8 +21,8 @@
 
 
 module div (
-input clk,
-output reg en
+input           clk ,
+output  reg     en
 );
 
 integer count = 0;

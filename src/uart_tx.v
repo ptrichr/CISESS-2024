@@ -82,7 +82,7 @@ parameter   PAYLOAD_BITS    = 8;
 // Number of stop bits indicating the end of a packet.
 parameter   STOP_BITS       = 1;
 
-// --------------------------------------------------------------------------- 
+// ----------------------------------------------------------------------------
 // Internal parameters.
 // 
 
@@ -94,7 +94,7 @@ localparam       CYCLES_PER_BIT     = BIT_P / CLK_P;
 // Size of the registers which store sample counts and bit durations.
 localparam       COUNT_REG_LEN      = 1+$clog2(CYCLES_PER_BIT);
 
-// --------------------------------------------------------------------------- 
+// ----------------------------------------------------------------------------
 // Internal registers.
 // 
 
@@ -126,7 +126,7 @@ localparam FSM_SEND = 2;
 localparam FSM_STOP = 3;
 
 
-// --------------------------------------------------------------------------- 
+// ----------------------------------------------------------------------------
 // FSM next state selection.
 // 
 
@@ -149,7 +149,7 @@ always @(*) begin : p_n_fsm_state
     endcase
 end
 
-// --------------------------------------------------------------------------- 
+// ----------------------------------------------------------------------------
 // Internal register setting and re-setting.
 // 
 

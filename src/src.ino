@@ -1,3 +1,5 @@
+// simple test script for ADC
+
 const int pwmPin = 9;
 const int highPWM = 102;
 const int lowPWM = 0;

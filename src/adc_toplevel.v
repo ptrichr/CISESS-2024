@@ -45,7 +45,7 @@ reg [11:0] on_data;
 reg [11:0] off_data;
 
 
-//------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // clock divider for ADC 100MHz -> 33.33kHz ? though i think this should be 16.67kHz now.
 wire clk_en;
 
@@ -56,7 +56,7 @@ d(
 );
 
 
-//------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // xadc instantiation connect the eoc_out .den_in to get continuous conversion
 xadc_wiz_0 xadc
 (
@@ -82,7 +82,7 @@ xadc_wiz_0 xadc
 );
 
 
-//------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // driver signals for XADC IP
 always @(posedge clk_en)
 begin
@@ -95,7 +95,7 @@ assign ready_falling = !ready && ready_d1 ? 1'b1 : 1'b0;
 
 assign demod = data[15:4];      // for testing XADC
 
-//------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Demodulation logic
 // signal demodulation needs to be T_switching - T_vapor
 // this means that we need to subtract when the switch is high from when the switch is low.

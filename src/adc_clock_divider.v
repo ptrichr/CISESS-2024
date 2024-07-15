@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module adc_clock_divider(
+module adc_clock_divider (
     input               clk,
     output  reg         clk_enable
 );

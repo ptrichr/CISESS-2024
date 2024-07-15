@@ -38,7 +38,6 @@ proc checkRequiredFiles { origin_dir} {
  "[file normalize "$origin_dir/src/uart_toplevel.v"]"\
  "[file normalize "$origin_dir/src/uart_tx.v"]"\
  "[file normalize "$origin_dir/src/radiometer_toplevel.v"]"\
- "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/uart_clock_divider.v"]"\
  "[file normalize "$origin_dir/constraints/const1.xdc"]"\
   ]
   foreach ifile $files {
@@ -166,12 +165,12 @@ set_property -name "simulator.xsim_gcc_version" -value "9.3.0" -objects $obj
 set_property -name "simulator.xsim_version" -value "2023.2" -objects $obj
 set_property -name "simulator_language" -value "Mixed" -objects $obj
 set_property -name "sim_compile_state" -value "1" -objects $obj
-set_property -name "webtalk.activehdl_export_sim" -value "2" -objects $obj
-set_property -name "webtalk.modelsim_export_sim" -value "2" -objects $obj
-set_property -name "webtalk.questa_export_sim" -value "2" -objects $obj
-set_property -name "webtalk.riviera_export_sim" -value "2" -objects $obj
-set_property -name "webtalk.vcs_export_sim" -value "2" -objects $obj
-set_property -name "webtalk.xsim_export_sim" -value "2" -objects $obj
+set_property -name "webtalk.activehdl_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.modelsim_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.questa_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.riviera_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.vcs_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.xsim_export_sim" -value "3" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
@@ -190,7 +189,6 @@ set files [list \
  [file normalize "${origin_dir}/src/uart_toplevel.v"] \
  [file normalize "${origin_dir}/src/uart_tx.v"] \
  [file normalize "${origin_dir}/src/radiometer_toplevel.v"] \
- [file normalize "${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/sources_1/imports/src/uart_clock_divider.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -245,6 +243,8 @@ set_property -name "file_type" -value "XDC" -objects $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
+set_property -name "target_constrs_file" -value "[file normalize "$origin_dir/constraints/const1.xdc"]" -objects $obj
+set_property -name "target_ucf" -value "[file normalize "$origin_dir/constraints/const1.xdc"]" -objects $obj
 
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
