@@ -41,12 +41,12 @@ wire [15:0] data;                                       // the 12 most significa
 reg [6:0] Address_in;
 
 // Storing data for demodulation
-reg [11:0] on_data;
-reg [11:0] off_data;
+integer on_sum;
+integer off_sum;
 
 
 //-----------------------------------------------------------------------------
-// clock divider for ADC 100MHz -> 33.33kHz ? though i think this should be 16.67kHz now.
+// clock divider for ADC 100MHz -> 33.33kHz
 wire clk_en;
 
 adc_clock_divider
@@ -74,11 +74,10 @@ xadc_wiz_0 xadc
     .alarm_out(),                                       // OR'ed output of all the Alarms  
     .drdy_out(ready),                                   // Data ready signal for the dynamic reconfiguration port
     
-    // check the demo for i/o ports
-    .vp_in(),                                           // input wire vp_in (i think these are reference pins, this is positive reference)
-    .vn_in(),                                           // input wire vn_in (ground reference)
-    .vauxp0(feed_signal),                               // input wire vauxp0 (analog input - switching)
-    .vauxn0(feed_ground)                                // input wire vauxn0 (grounded? check schematic)
+    .vp_in(),
+    .vn_in(),
+    .vauxp0(feed_signal),
+    .vauxn0(feed_ground)
 );
 
 
@@ -101,18 +100,19 @@ assign demod = data[15:4];      // for testing XADC
 // this means that we need to subtract when the switch is high from when the switch is low.
 // this data resolution is kinda low though, there's only 1 sample per clock cycle
 
-// switch is high -> sample for on
-//always @(posedge switch_pwm)
+//always @(posedge clk_en)
 //begin
-//    on_data <= data[15:4];
+//    if (switch_pwm == 1)
+//    begin
+//        on_sum <= on_sum + data[15:4];
+//    end
+    
+//    else
+//    begin
+//        off_sum <= off_sum + data[15:4];
+//    end
 //end
 
-//// switch is low -> sample for off
-//always @(negedge switch_pwm)
-//begin
-//    off_data <= data[15:4];
-//end
-
-//assign demod = on_data - off_data;
+//assign demod = (on_sum / 8) - (off_sum / 8) ;
 
 endmodule
