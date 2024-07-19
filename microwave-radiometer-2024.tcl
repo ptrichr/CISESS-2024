@@ -165,12 +165,14 @@ set_property -name "simulator.xsim_gcc_version" -value "9.3.0" -objects $obj
 set_property -name "simulator.xsim_version" -value "2023.2" -objects $obj
 set_property -name "simulator_language" -value "Mixed" -objects $obj
 set_property -name "sim_compile_state" -value "1" -objects $obj
-set_property -name "webtalk.activehdl_export_sim" -value "3" -objects $obj
-set_property -name "webtalk.modelsim_export_sim" -value "3" -objects $obj
-set_property -name "webtalk.questa_export_sim" -value "3" -objects $obj
-set_property -name "webtalk.riviera_export_sim" -value "3" -objects $obj
-set_property -name "webtalk.vcs_export_sim" -value "3" -objects $obj
-set_property -name "webtalk.xsim_export_sim" -value "3" -objects $obj
+set_property -name "source_mgmt_mode" -value "DisplayOnly" -objects $obj
+set_property -name "webtalk.activehdl_export_sim" -value "1" -objects $obj
+set_property -name "webtalk.modelsim_export_sim" -value "1" -objects $obj
+set_property -name "webtalk.questa_export_sim" -value "1" -objects $obj
+set_property -name "webtalk.riviera_export_sim" -value "1" -objects $obj
+set_property -name "webtalk.vcs_export_sim" -value "1" -objects $obj
+set_property -name "webtalk.xsim_export_sim" -value "1" -objects $obj
+set_property -name "webtalk.xsim_launch_sim" -value "1" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
@@ -257,7 +259,8 @@ set obj [get_filesets sim_1]
 
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
-set_property -name "top" -value "radiometer_toplevel" -objects $obj
+set_property -name "top" -value "tb" -objects $obj
+set_property -name "top_auto_set" -value "0" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
 # Set 'utils_1' fileset object
@@ -306,7 +309,6 @@ if { $obj != "" } {
 
 }
 set obj [get_runs synth_1]
-set_property -name "needs_refresh" -value "1" -objects $obj
 set_property -name "incremental_checkpoint" -value "$proj_dir/microwave-radiometer-2024.srcs/utils_1/imports/synth_1/radiometer_toplevel.dcp" -objects $obj
 set_property -name "auto_incremental_checkpoint" -value "1" -objects $obj
 set_property -name "strategy" -value "Vivado Synthesis Defaults" -objects $obj
@@ -530,7 +532,6 @@ set_property -name "options.warn_on_violation" -value "1" -objects $obj
 
 }
 set obj [get_runs impl_1]
-set_property -name "needs_refresh" -value "1" -objects $obj
 set_property -name "strategy" -value "Vivado Implementation Defaults" -objects $obj
 set_property -name "steps.write_bitstream.args.readback_file" -value "0" -objects $obj
 set_property -name "steps.write_bitstream.args.verbose" -value "0" -objects $obj

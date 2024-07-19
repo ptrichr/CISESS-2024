@@ -29,10 +29,12 @@ input               sw_0            ,           // UART enable switch
 
 output  wire        switch_pwm      ,           // switching PWM output
 output  wire        uart_txd        ,           // UART transmission pin
-output  wire        busy                        // UART busy LED
+output  wire        busy,                        // UART busy LED
+output wire [3:0] LED
 );  
 
 wire adc_enable;
+wire [11:0] demod;
 
 // instantiate switch module
 switching
@@ -48,7 +50,8 @@ a(
 .clk            (clk            ), 
 .switch_pwm     (switch_pwm     ), 
 .feed_signal    (feed_signal    ), 
-.feed_ground    (feed_ground    ), 
+.feed_ground    (feed_ground    ),
+.LED            (LED), 
 .demod          (demod          )
 );
 
@@ -61,5 +64,22 @@ u(
 .uart_txd       (uart_txd       ),
 .busy           (busy           )
 );
+
+//parameter CLK_HZ = 100000000;
+//parameter BIT_RATE = 115200;
+//parameter PAYLOAD_BITS = 8;
+
+//uart_tx #(
+//.BIT_RATE       (BIT_RATE       ),
+//.PAYLOAD_BITS   (PAYLOAD_BITS   ),
+//.CLK_HZ         (CLK_HZ         )
+//) transmitter(
+//.clk            (clk            ),
+//.resetn         (sw_0           ),
+//.uart_txd       (uart_txd       ),
+//.uart_tx_en     (1'b1     ),
+//.uart_tx_busy   (busy           ),
+//.uart_tx_data   (demod[7:0]          ) 
+//);
 
 endmodule

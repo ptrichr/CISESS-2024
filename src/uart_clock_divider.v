@@ -20,6 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
+// previously was if count == 4999
+
 module div (
 input           clk ,
 output  reg     en
@@ -29,7 +31,7 @@ integer count = 0;
 
 always @(negedge clk)
 begin
-    if (count == 4999)
+    if (count == 1000)
     begin
         en <= 1;
         count <= 0;

@@ -25,6 +25,7 @@ module adc_toplevel(
     input switch_pwm,                                       // switching PWM
     input feed_signal,                                      // B13 (A0 on board)
     input feed_ground,
+    output reg [3:0] LED,
     output wire [11:0] demod
 );
 
@@ -61,7 +62,7 @@ d(
 xadc_wiz_0 xadc
 (
     .daddr_in(8'h10),                                   // Address bus for the dynamic reconfiguration port
-    .dclk_in(clk_en),                                   // Clock input for the dynamic reconfiguration port
+    .dclk_in(clk),                                      // Clock input for the dynamic reconfiguration port
     .den_in(enable),                                    // Enable Signal for the dynamic reconfiguration port
     .di_in(0),                                          // Input data bus for the dynamic reconfiguration port
     .dwe_in(0),                                         // Write Enable for the dynamic reconfiguration port
@@ -91,6 +92,24 @@ end
 
 assign ready_rising = ready && !ready_d1 ? 1'b1 : 1'b0;
 assign ready_falling = !ready && ready_d1 ? 1'b1 : 1'b0;
+
+
+//led visual dmm              
+always @(posedge clk)
+begin
+  if (ready_rising == 1)
+  begin
+      case (data[15:13])
+        4: LED <= 4'b0001;
+        5: LED <= 4'b0011;
+        6: LED <= 4'b0111;
+        7: LED <= 4'b1111;
+        default: LED <= 6'b0; 
+      endcase
+  end
+  else
+      LED <= LED;
+end
 
 assign demod = data[15:4];      // for testing XADC
 
