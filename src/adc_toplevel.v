@@ -26,7 +26,7 @@ module adc_toplevel(
     input feed_signal,                                      // B13 (A0 on board)
     input feed_ground,
     output reg [3:0] LED,
-    output wire [11:0] demod
+    output reg [11:0] denoise
 );
 
 // make sure to ground the pins labeled V_P and V_N
@@ -42,8 +42,10 @@ wire [15:0] data;                                       // the 12 most significa
 reg [6:0] Address_in;
 
 // Storing data for demodulation
-integer on_sum;
-integer off_sum;
+integer on_data;
+integer off_data;
+reg on_ready;
+reg off_ready;
 
 
 //-----------------------------------------------------------------------------
@@ -59,6 +61,7 @@ d(
 
 //-----------------------------------------------------------------------------
 // xadc instantiation connect the eoc_out .den_in to get continuous conversion
+// xadc dclk needs the system clock (100MHz)
 xadc_wiz_0 xadc
 (
     .daddr_in(8'h10),                                   // Address bus for the dynamic reconfiguration port
@@ -111,27 +114,40 @@ begin
       LED <= LED;
 end
 
-assign demod = data[15:4];      // for testing XADC
+always @(*)
+begin
+    denoise <= data[15:4];
+end
 
 //-----------------------------------------------------------------------------
-// Demodulation logic
-// signal demodulation needs to be T_switching - T_vapor
-// this means that we need to subtract when the switch is high from when the switch is low.
-// this data resolution is kinda low though, there's only 1 sample per clock cycle
+// Denoise logic
 
+// collect data from either on or off
 //always @(posedge clk_en)
 //begin
 //    if (switch_pwm == 1)
 //    begin
-//        on_sum <= on_sum + data[15:4];
+//        on_data <= data[15:4];
+//        on_ready <= 1;
 //    end
     
 //    else
 //    begin
-//        off_sum <= off_sum + data[15:4];
+//        off_data <= data[15:4];
+//        off_ready <= 1;
 //    end
 //end
 
-//assign demod = (on_sum / 8) - (off_sum / 8) ;
+//// when data for both is ready, calculate denoise, flush ready
+//always @(on_ready or off_ready)
+//begin
+//    if (on_ready == 1 && off_ready == 1)
+//    begin
+//        denoise <= (on_data) - (off_data);
+//        on_ready <= 0;
+//        off_ready <= 0;
+//    end
+//end
+
 
 endmodule

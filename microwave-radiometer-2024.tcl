@@ -29,16 +29,12 @@ proc checkRequiredFiles { origin_dir} {
   }
 
   set files [list \
+ "[file normalize "$origin_dir/src/radiometer_toplevel.v"]"\
+ "[file normalize "$origin_dir/src/switch_clock_divider.v"]"\
  "[file normalize "$origin_dir/src/adc_clock_divider.v"]"\
  "[file normalize "$origin_dir/src/adc_toplevel.v"]"\
- "[file normalize "$origin_dir/src/switch_clock_divider.v"]"\
- "[file normalize "$origin_dir/src/uart_clock_divider.v"]"\
- "[file normalize "$origin_dir/src/uart_controller.v"]"\
- "[file normalize "$origin_dir/src/uart_datapath.v"]"\
- "[file normalize "$origin_dir/src/uart_toplevel.v"]"\
  "[file normalize "$origin_dir/src/uart_tx.v"]"\
- "[file normalize "$origin_dir/src/radiometer_toplevel.v"]"\
- "[file normalize "$origin_dir/constraints/const1.xdc"]"\
+ "[file normalize "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/constrs_1/imports/constraints/const1.xdc"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -166,13 +162,12 @@ set_property -name "simulator.xsim_version" -value "2023.2" -objects $obj
 set_property -name "simulator_language" -value "Mixed" -objects $obj
 set_property -name "sim_compile_state" -value "1" -objects $obj
 set_property -name "source_mgmt_mode" -value "DisplayOnly" -objects $obj
-set_property -name "webtalk.activehdl_export_sim" -value "1" -objects $obj
-set_property -name "webtalk.modelsim_export_sim" -value "1" -objects $obj
-set_property -name "webtalk.questa_export_sim" -value "1" -objects $obj
-set_property -name "webtalk.riviera_export_sim" -value "1" -objects $obj
-set_property -name "webtalk.vcs_export_sim" -value "1" -objects $obj
-set_property -name "webtalk.xsim_export_sim" -value "1" -objects $obj
-set_property -name "webtalk.xsim_launch_sim" -value "1" -objects $obj
+set_property -name "webtalk.activehdl_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.modelsim_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.questa_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.riviera_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.vcs_export_sim" -value "3" -objects $obj
+set_property -name "webtalk.xsim_export_sim" -value "3" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
@@ -182,15 +177,11 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
+ [file normalize "${origin_dir}/src/radiometer_toplevel.v"] \
+ [file normalize "${origin_dir}/src/switch_clock_divider.v"] \
  [file normalize "${origin_dir}/src/adc_clock_divider.v"] \
  [file normalize "${origin_dir}/src/adc_toplevel.v"] \
- [file normalize "${origin_dir}/src/switch_clock_divider.v"] \
- [file normalize "${origin_dir}/src/uart_clock_divider.v"] \
- [file normalize "${origin_dir}/src/uart_controller.v"] \
- [file normalize "${origin_dir}/src/uart_datapath.v"] \
- [file normalize "${origin_dir}/src/uart_toplevel.v"] \
  [file normalize "${origin_dir}/src/uart_tx.v"] \
- [file normalize "${origin_dir}/src/radiometer_toplevel.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -236,17 +227,17 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 set obj [get_filesets constrs_1]
 
 # Add/Import constrs file and set constrs file properties
-set file "[file normalize "$origin_dir/constraints/const1.xdc"]"
+set file "[file normalize ${origin_dir}/vivado_project/microwave-radiometer-2024.srcs/constrs_1/imports/constraints/const1.xdc]"
 set file_added [add_files -norecurse -fileset $obj [list $file]]
-set file "$origin_dir/constraints/const1.xdc"
+set file "$origin_dir/vivado_project/microwave-radiometer-2024.srcs/constrs_1/imports/constraints/const1.xdc"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
 set_property -name "file_type" -value "XDC" -objects $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
-set_property -name "target_constrs_file" -value "[file normalize "$origin_dir/constraints/const1.xdc"]" -objects $obj
-set_property -name "target_ucf" -value "[file normalize "$origin_dir/constraints/const1.xdc"]" -objects $obj
+set_property -name "target_constrs_file" -value "$orig_proj_dir/microwave-radiometer-2024.srcs/constrs_1/imports/constraints/const1.xdc" -objects $obj
+set_property -name "target_ucf" -value "$orig_proj_dir/microwave-radiometer-2024.srcs/constrs_1/imports/constraints/const1.xdc" -objects $obj
 
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
@@ -259,9 +250,6 @@ set obj [get_filesets sim_1]
 
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
-set_property -name "top" -value "tb" -objects $obj
-set_property -name "top_auto_set" -value "0" -objects $obj
-set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
 # Set 'utils_1' fileset object
 set obj [get_filesets utils_1]

@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 07/02/2024 10:30:36 AM
+// Create Date: 07/22/2024 02:06:51 PM
 // Design Name: 
 // Module Name: uart_tx
 // Project Name: 
@@ -20,212 +20,182 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-// This file contains the UART Transmitter.  This transmitter is able
-// to transmit 8 bits of serial data, one start bit, one stop bit,
-// and no parity bit.  When transmit is complete o_Tx_done will be
-// driven high for one clock cycle.
-//
-// Set Parameter CLKS_PER_BIT as follows:
-// CLKS_PER_BIT = (Frequency of i_Clock)/(Frequency of UART)
-// Example: 10 MHz Clock, 115200 baud UART
-// (10000000)/(115200) = 87
-  
-
-// 
-// Module: impl_top
-// 
-// Notes:
-// - Top level module to be used in an implementation.
-// - To be used in conjunction with the constraints/defaults.xdc file.
-// - Ports can be (un)commented depending on whether they are being used.
-// - The constraints file contains a complete list of the available ports
-//   including the chipkit/Arduino pins.
-//
-
-
-
-// 
-// Module: uart_tx 
-// 
-// Notes:
-// - UART transmitter module.
-//
-
-module uart_tx(
-input  wire         clk         , // Top level system clock input.
-input  wire         resetn      , // Asynchronous active low reset.
-output wire         uart_txd    , // UART transmit pin.
-output wire         uart_tx_busy, // Module busy sending previous item.
-input  wire         uart_tx_en  , // Send the data on uart_tx_data
-input  wire [PAYLOAD_BITS-1:0]   uart_tx_data  // The data to be sent
+module uart_tx (
+    input wire clk,            // 100 MHz clock input
+    input wire reset,          // Reset
+    input wire [11:0] data,    // 12-bit data input
+    input wire start,          // Start transmission signal
+    output reg uart_txd,       // UART TXD pin
+    output reg busy            // Busy
 );
 
-// --------------------------------------------------------------------------- 
-// External parameters.
-// 
+// Baud rate calculation
+localparam BAUD_RATE = 115200;
+localparam CLOCK_FREQ = 100_000_000;
+localparam BAUD_COUNTER_MAX = CLOCK_FREQ / BAUD_RATE;
 
-//
-// Input bit rate of the UART line.
-parameter   BIT_RATE        = 9600; // bits / sec
-localparam  BIT_P           = 1_000_000_000 * 1/BIT_RATE; // nanoseconds
+// UART state machine states
+localparam IDLE = 3'b000,
+           START1 = 3'b001,
+           DATA1 = 3'b010,
+           STOP1 = 3'b011,
+           NEXT = 3'b100,
+           START2 = 3'b101,
+           DATA2 = 3'b110,
+           STOP2 = 3'b111;
 
-//
-// Clock frequency in hertz.
-parameter   CLK_HZ          =    50_000_000;
-localparam  CLK_P           = 1_000_000_000 * 1/CLK_HZ; // nanoseconds
+reg [2:0] present_state, next_state;
 
-//
-// Number of data bits recieved per UART packet.
-parameter   PAYLOAD_BITS    = 8;
+// Counter for baud rate
+reg [15:0] baud_counter;
 
-//
-// Number of stop bits indicating the end of a packet.
-parameter   STOP_BITS       = 1;
-
-// ----------------------------------------------------------------------------
-// Internal parameters.
-// 
-
-//
-// Number of clock cycles per uart bit.
-localparam       CYCLES_PER_BIT     = BIT_P / CLK_P;
-
-//
-// Size of the registers which store sample counts and bit durations.
-localparam       COUNT_REG_LEN      = 1+$clog2(CYCLES_PER_BIT);
-
-// ----------------------------------------------------------------------------
-// Internal registers.
-// 
-
-//
-// Internally latched value of the uart_txd line. Helps break long timing
-// paths from the logic to the output pins.
-reg txd_reg;
-
-//
-// Storage for the serial data to be sent.
-reg [PAYLOAD_BITS-1:0] data_to_send;
-
-//
-// Counter for the number of cycles over a packet bit.
-reg [COUNT_REG_LEN-1:0] cycle_counter;
-
-//
-// Counter for the number of sent bits of the packet.
+// reg to hold data halves, bit counter to keep position
+reg [7:0] byte1, byte2;
 reg [3:0] bit_counter;
 
-//
-// Current and next states of the internal FSM.
-reg [2:0] fsm_state;
-reg [2:0] n_fsm_state;
-
-localparam FSM_IDLE = 0;
-localparam FSM_START= 1;
-localparam FSM_SEND = 2;
-localparam FSM_STOP = 3;
-
-
-// ----------------------------------------------------------------------------
-// FSM next state selection.
-// 
-
-assign uart_tx_busy = fsm_state != FSM_IDLE;
-assign uart_txd     = txd_reg;
-
-wire next_bit     = cycle_counter == CYCLES_PER_BIT;
-wire payload_done = bit_counter   == PAYLOAD_BITS  ;
-wire stop_done    = bit_counter   == STOP_BITS && fsm_state == FSM_STOP;
-
-//
-// Handle picking the next state.
-always @(*) begin : p_n_fsm_state
-    case(fsm_state)
-        FSM_IDLE : n_fsm_state = uart_tx_en   ? FSM_START: FSM_IDLE ;
-        FSM_START: n_fsm_state = next_bit     ? FSM_SEND : FSM_START;
-        FSM_SEND : n_fsm_state = payload_done ? FSM_STOP : FSM_SEND ;
-        FSM_STOP : n_fsm_state = stop_done    ? FSM_IDLE : FSM_STOP ;
-        default  : n_fsm_state = FSM_IDLE;
-    endcase
-end
-
-// ----------------------------------------------------------------------------
-// Internal register setting and re-setting.
-// 
-
-//
-// Handle updates to the sent data register.
-integer i = 0;
-always @(posedge clk) begin : p_data_to_send
-    if(!resetn) begin
-        data_to_send <= {PAYLOAD_BITS{1'b0}};
-    end else if(fsm_state == FSM_IDLE && uart_tx_en) begin
-        data_to_send <= uart_tx_data;
-    end else if(fsm_state       == FSM_SEND       && next_bit ) begin
-        for ( i = PAYLOAD_BITS-2; i >= 0; i = i - 1) begin
-            data_to_send[i] <= data_to_send[i+1];
-        end
+// split demod data into 2 bytes
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        byte1 <= 8'b0;
+        byte2 <= 8'b0;
+    end
+    else if (start)
+    begin
+        byte1 <= {4'b0000, data[11:8]}; // 4 MSBs padded with 4 zeros
+        byte2 <= data[7:0];             // 8 LSBs
     end
 end
 
-
-//
-// Increments the bit counter each time a new bit frame is sent.
-always @(posedge clk) begin : p_bit_counter
-    if(!resetn) begin
-        bit_counter <= 4'b0;
-    end else if(fsm_state != FSM_SEND && fsm_state != FSM_STOP) begin
-        bit_counter <= {COUNT_REG_LEN{1'b0}};
-    end else if(fsm_state == FSM_SEND && n_fsm_state == FSM_STOP) begin
-        bit_counter <= {COUNT_REG_LEN{1'b0}};
-    end else if(fsm_state == FSM_STOP&& next_bit) begin
-        bit_counter <= bit_counter + 1'b1;
-    end else if(fsm_state == FSM_SEND && next_bit) begin
-        bit_counter <= bit_counter + 1'b1;
+// FSM
+always @(posedge clk or posedge reset)
+begin
+    if (reset)                          // idle when reset is enabled
+    begin
+        present_state <= IDLE;
+        baud_counter <= 0;
+        bit_counter <= 0;
+        uart_txd <= 1'b1;
+        busy <= 1'b0;
     end
-end
+    else                                // normal output logic
+    begin
+        present_state <= next_state;
+        case (present_state)
+            IDLE:
+            begin
+                uart_txd <= 1'b1;
+                if (start)
+                begin
+                    busy <= 1'b1;
+                    next_state <= START1;
+                end
+                else
+                begin
+                    busy <= 1'b0;
+                end
+            end
 
+            START1:
+            begin
+                if (baud_counter == BAUD_COUNTER_MAX)
+                begin
+                    uart_txd <= 1'b0; // Start bit
+                    baud_counter <= 0;
+                    bit_counter <= 0;
+                    next_state <= DATA1;
+                end
+                else
+                begin
+                    baud_counter <= baud_counter + 1;
+                end
+            end
 
-//
-// Increments the cycle counter when sending.
-always @(posedge clk) begin : p_cycle_counter
-    if(!resetn) begin
-        cycle_counter <= {COUNT_REG_LEN{1'b0}};
-    end else if(next_bit) begin
-        cycle_counter <= {COUNT_REG_LEN{1'b0}};
-    end else if(fsm_state == FSM_START || 
-                fsm_state == FSM_SEND  || 
-                fsm_state == FSM_STOP   ) begin
-        cycle_counter <= cycle_counter + 1'b1;
-    end
-end
+            DATA1:
+            begin
+                if (baud_counter == BAUD_COUNTER_MAX)
+                begin
+                    baud_counter <= 0;
+                    uart_txd <= byte1[bit_counter]; // Send bits of byte1
+                    bit_counter <= bit_counter + 1;
+                    if (bit_counter == 7) begin
+                        next_state <= STOP1;
+                    end
+                end
+                else
+                begin
+                    baud_counter <= baud_counter + 1;
+                end
+            end
 
+            STOP1:
+            begin
+                if (baud_counter == BAUD_COUNTER_MAX)
+                begin
+                    uart_txd <= 1'b1; // Stop bit
+                    baud_counter <= 0;
+                    next_state <= NEXT;
+                end
+                else
+                begin
+                    baud_counter <= baud_counter + 1;
+                end
+            end
 
-//
-// Progresses the next FSM state.
-always @(posedge clk) begin : p_fsm_state
-    if(!resetn) begin
-        fsm_state <= FSM_IDLE;
-    end else begin
-        fsm_state <= n_fsm_state;
-    end
-end
+            NEXT:
+            begin
+                if (baud_counter == BAUD_COUNTER_MAX)
+                begin
+                    uart_txd <= 1'b0; // Start bit for next byte
+                    baud_counter <= 0;
+                    bit_counter <= 0;
+                    next_state <= DATA2;
+                end
+                else
+                begin
+                    baud_counter <= baud_counter + 1;
+                end
+            end
 
-
-//
-// Responsible for updating the internal value of the txd_reg.
-always @(posedge clk) begin : p_txd_reg
-    if(!resetn) begin
-        txd_reg <= 1'b1;
-    end else if(fsm_state == FSM_IDLE) begin
-        txd_reg <= 1'b1;
-    end else if(fsm_state == FSM_START) begin
-        txd_reg <= 1'b0;
-    end else if(fsm_state == FSM_SEND) begin
-        txd_reg <= data_to_send[0];
-    end else if(fsm_state == FSM_STOP) begin
-        txd_reg <= 1'b1;
+            DATA2:
+            begin
+                if (baud_counter == BAUD_COUNTER_MAX)
+                begin
+                    baud_counter <= 0;
+                    uart_txd <= byte2[bit_counter]; // Send bits of byte2
+                    bit_counter <= bit_counter + 1;
+                    if (bit_counter == 7) begin
+                        next_state <= STOP2;
+                    end
+                end
+                else
+                begin
+                    baud_counter <= baud_counter + 1;
+                end
+            end
+            STOP2:
+            begin
+                if (baud_counter == BAUD_COUNTER_MAX)
+                begin
+                    uart_txd <= 1'b1; // Stop bit
+                    baud_counter <= 0;
+                    busy <= 1'b0;
+                    next_state <= IDLE;
+                end
+                else
+                begin
+                    baud_counter <= baud_counter + 1;
+                end
+            end
+        endcase
     end
 end
 
 endmodule
+
+
+
+
+
+
