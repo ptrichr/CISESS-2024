@@ -114,40 +114,46 @@ begin
       LED <= LED;
 end
 
-always @(*)
-begin
-    denoise <= data[15:4];
-end
+//always @(*)
+//begin
+//    denoise <= data[15:4];
+//end
 
 //-----------------------------------------------------------------------------
 // Denoise logic
 
-// collect data from either on or off
-//always @(posedge clk_en)
-//begin
-//    if (switch_pwm == 1)
-//    begin
-//        on_data <= data[15:4];
-//        on_ready <= 1;
-//    end
-    
-//    else
-//    begin
-//        off_data <= data[15:4];
-//        off_ready <= 1;
-//    end
-//end
+// collect data from either on or off. if data has been collected from both, reset
+always @(posedge clk_en)
+begin
+    if (on_ready == 1 && off_ready == 1)
+    begin
+        on_ready <= 0;
+        off_ready <= 0;
+    end
 
-//// when data for both is ready, calculate denoise, flush ready
-//always @(on_ready or off_ready)
-//begin
-//    if (on_ready == 1 && off_ready == 1)
-//    begin
-//        denoise <= (on_data) - (off_data);
-//        on_ready <= 0;
-//        off_ready <= 0;
-//    end
-//end
+    if (switch_pwm == 1)
+    begin
+        on_data <= data[15:4];
+        on_ready <= 1;
+    end
+    else
+    begin
+        off_data <= data[15:4];
+        off_ready <= 1;
+    end
+end
+
+// assign denoise.
+always @(*)
+begin
+    if (on_data > off_data)
+        denoise <= on_data - off_data;
+    else
+        denoise <= 0;           // handles underflow
+        
+    on_ready <= 0;
+    off_ready <= 0;
+end
 
 
 endmodule
