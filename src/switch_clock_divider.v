@@ -21,8 +21,8 @@
 
 
 module switching (
-    input                clk,
-    output  reg          pwm
+input                clk,
+output  reg          pwm
 );
 
 integer count;

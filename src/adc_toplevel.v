@@ -21,15 +21,13 @@
 
 
 module adc_toplevel(
-    input clk,                                              // System clock
-    input switch_pwm,                                       // switching PWM
-    input feed_signal,                                      // B13 (A0 on board)
-    input feed_ground,
-    output reg [3:0] LED,
-    output reg [11:0] denoise
+input               clk             ,       // System clock
+input               switch_pwm      ,       // switching PWM
+input               feed_signal     ,       // B13 (A0 on board)
+input               feed_ground     ,
+output reg  [3:0]   LED             ,       // LED for testing
+output reg  [11:0]  denoise                 // Denoise data
 );
-
-// make sure to ground the pins labeled V_P and V_N
 
 
 // ADC variables
@@ -38,7 +36,7 @@ wire ready;
 reg ready_d1;
 wire ready_rising;
 wire ready_falling;
-wire [15:0] data;                                       // the 12 most significant bits store the data we need
+wire [15:0] data;               // the 12 most significant bits store ADC data
 reg [6:0] Address_in;
 
 // Storing data for demodulation
@@ -64,19 +62,19 @@ d(
 // xadc dclk needs the system clock (100MHz)
 xadc_wiz_0 xadc
 (
-    .daddr_in(8'h10),                                   // Address bus for the dynamic reconfiguration port
-    .dclk_in(clk),                                      // Clock input for the dynamic reconfiguration port
-    .den_in(enable),                                    // Enable Signal for the dynamic reconfiguration port
-    .di_in(0),                                          // Input data bus for the dynamic reconfiguration port
-    .dwe_in(0),                                         // Write Enable for the dynamic reconfiguration port
-    .reset_in(0),                                       // Reset signal for the System Monitor control logic
-    .busy_out(),                                        // ADC Busy signal
-    .channel_out(),                                     // Channel Selection Outputs
-    .do_out(data),                                      // Output data bus for dynamic reconfiguration port
-    .eoc_out(enable),                                   // End of Conversion Signal
-    .eos_out(),                                         // End of Sequence Signal
-    .alarm_out(),                                       // OR'ed output of all the Alarms  
-    .drdy_out(ready),                                   // Data ready signal for the dynamic reconfiguration port
+    .daddr_in(8'h10),                   // Address bus for the dynamic reconfiguration port
+    .dclk_in(clk),                      // Clock input for the dynamic reconfiguration port
+    .den_in(enable),                    // Enable Signal for the dynamic reconfiguration port
+    .di_in(0),                          // Input data bus for the dynamic reconfiguration port
+    .dwe_in(0),                         // Write Enable for the dynamic reconfiguration port
+    .reset_in(0),                       // Reset signal for the System Monitor control logic
+    .busy_out(),                        // ADC Busy signal
+    .channel_out(),                     // Channel Selection Outputs
+    .do_out(data),                      // Output data bus for dynamic reconfiguration port
+    .eoc_out(enable),                   // End of Conversion Signal
+    .eos_out(),                         // End of Sequence Signal
+    .alarm_out(),                       // OR'ed output of all the Alarms  
+    .drdy_out(ready),                   // Data ready signal for the dynamic reconfiguration port
     
     .vp_in(),
     .vn_in(),
@@ -97,7 +95,7 @@ assign ready_rising = ready && !ready_d1 ? 1'b1 : 1'b0;
 assign ready_falling = !ready && ready_d1 ? 1'b1 : 1'b0;
 
 
-//led visual dmm              
+//led visual on board              
 always @(posedge clk)
 begin
   if (ready_rising == 1)
@@ -113,11 +111,6 @@ begin
   else
       LED <= LED;
 end
-
-//always @(*)
-//begin
-//    denoise <= data[15:4];
-//end
 
 //-----------------------------------------------------------------------------
 // Denoise logic

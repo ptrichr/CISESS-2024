@@ -9,7 +9,7 @@
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
-// Description: 
+// Description: Special UART transmitter module to send 2 bytes of data in order
 // 
 // Dependencies: 
 // 
@@ -21,12 +21,12 @@
 
 
 module uart_tx (
-    input wire clk,            // 100 MHz clock input
-    input wire reset,          // Reset
-    input wire [11:0] data,    // 12-bit data input
-    input wire start,          // Start transmission signal
-    output reg uart_txd,       // UART TXD pin
-    output reg busy            // Busy
+input  wire     clk             ,       // 100 MHz clock input
+input  wire     reset           ,       // Reset
+input  wire     [11:0] data     ,       // 12-bit data input
+input  wire     start           ,       // Start transmission signal
+output reg      uart_txd        ,       // UART TXD pin
+output reg      busy                    // Busy
 );
 
 // Baud rate calculation
