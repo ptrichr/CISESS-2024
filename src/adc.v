@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module adc_toplevel(
+module adc (
 input               clk             ,       // System clock
 input               switch_pwm      ,       // switching PWM
 input               feed_signal     ,       // B13 (A0 on board)

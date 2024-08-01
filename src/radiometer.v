@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module radiometer_toplevel(
+module radiometer (
 input               clk             ,           // R2, internal 100MHz clock
 input               feed_signal     ,
 input               feed_ground     ,
@@ -36,7 +36,7 @@ output  wire [3:0]  LED
 wire [11:0] denoise;
 
 // instantiate switch module
-switching
+switch_controller
 s(
 .clk            (clk            ), 
 .pwm            (switch_pwm     )
@@ -44,7 +44,7 @@ s(
                        
 
 // instantiate ADC module                       
-adc_toplevel
+adc
 a(
 .clk            (clk            ), 
 .switch_pwm     (switch_pwm     ), 

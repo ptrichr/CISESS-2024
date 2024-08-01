@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module switching (
+module switch_controller (
 input                clk,
 output  reg          pwm
 );
